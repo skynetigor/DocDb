@@ -1,16 +1,25 @@
-﻿using DocDb.Core.Abstracts;
+﻿using System;
+using DocDb.Core.Abstracts;
 
 namespace DocDb.Core
 {
     public class DocumentDbOptionsBuilder
     {
-        private IDocumentDbOptions documentDbOptions;
+        private IDocumentDbOptions _documentDbOptions;
 
-        internal IDocumentDbOptions DocumentDbOptions => documentDbOptions;
+        internal static IDocumentDbOptions GetOptionsFromBuilderAction(Action<DocumentDbOptionsBuilder> action)
+        {
+            var builder = new DocumentDbOptionsBuilder();
+            action(builder);
+
+            return builder._documentDbOptions;
+        }
+
+        private DocumentDbOptionsBuilder() { }
 
         public void UseOptions(IDocumentDbOptions options)
         {
-            documentDbOptions = options;
+            _documentDbOptions = options;
         }
     }
 }

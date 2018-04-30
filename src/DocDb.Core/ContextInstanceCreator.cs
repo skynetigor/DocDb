@@ -29,7 +29,8 @@ namespace DocDb.Core
                 ct.GetParameters().FirstOrDefault(func) != null);
         }
 
-        public static TContext CreateContextInstance(IServiceProvider serviceProvider, Action<DocumentDbOptionsBuilder> builderFunc)
+        public static TContext CreateContextInstance(IServiceProvider serviceProvider,
+            Action<DocumentDbOptionsBuilder> builderFunc)
         {
             if (ActionCtor.IsNotNull())
             {
@@ -37,13 +38,8 @@ namespace DocDb.Core
             }
             else if (OptionCtor.IsNotNull())
             {
-                var builder = new DocumentDbOptionsBuilder();
-
-                builderFunc(builder);
-
-                var options = builder.DocumentDbOptions;
-
-                return (TContext)serviceProvider.CreateInstance(OptionCtor, typeof(TContext), options);
+                return (TContext) serviceProvider.CreateInstance(OptionCtor, typeof(TContext),
+                    DocumentDbOptionsBuilder.GetOptionsFromBuilderAction(builderFunc));
             }
 
             throw new Exception();

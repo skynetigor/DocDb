@@ -15,18 +15,8 @@ namespace DocDb.Core
             Setup();
         }
 
-        protected DocumentDbContext(Action<DocumentDbOptionsBuilder> builderFunc)
-        {
-            var builder = new DocumentDbOptionsBuilder();
-            builderFunc(builder);
-
-            if (builder.DocumentDbOptions.IsNotNull())
-            {
-                Provider = builder.DocumentDbOptions.ProviderInstance;
-            }
-
-            Setup();
-        }
+        protected DocumentDbContext(Action<DocumentDbOptionsBuilder> builderFunc) : this(
+            DocumentDbOptionsBuilder.GetOptionsFromBuilderAction(builderFunc)) { }
 
         public void SaveChanges()
         {
