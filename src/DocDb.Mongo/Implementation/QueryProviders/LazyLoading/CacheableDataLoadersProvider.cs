@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DocDb.Core.DI.Extensions;
+using DocDb.Core.DI.Abstract;
 using DocDb.Mongo.Abstracts;
 using DocDb.Mongo.Extensions;
 using DocDb.Mongo.Implementation.QueryProviders.LazyLoading.Loaders;
@@ -12,7 +12,7 @@ namespace DocDb.Mongo.Implementation.QueryProviders.LazyLoading
     {
         private static IDictionary<string, Type> LoadersTypesDictionary { get; }
 
-        private IServiceProvider ServiceProvider { get; }
+        private IDocDbServiceProvider ServiceProvider { get; }
 
         static CacheableDataLoadersProvider()
         {
@@ -25,7 +25,7 @@ namespace DocDb.Mongo.Implementation.QueryProviders.LazyLoading
                     .GetGenericArguments()[0].ToString());
         }
 
-        public CacheableDataLoadersProvider(IServiceProvider serviceProvider)
+        public CacheableDataLoadersProvider(IDocDbServiceProvider serviceProvider)
         {
             this.ServiceProvider = serviceProvider;
         }

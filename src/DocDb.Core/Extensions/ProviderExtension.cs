@@ -2,7 +2,6 @@
 using System.Reflection;
 using DocDb.Core.Abstracts;
 
-
 namespace DocDb.Core.Extensions
 {
     public static class ProviderExtension

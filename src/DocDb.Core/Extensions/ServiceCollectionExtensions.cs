@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using DocDb.Core.Abstracts;
 using DocDb.Core.DI.Extensions;
 using DocDb.Core.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
-
 
 namespace DocDb.Core.Extensions
 {
@@ -14,29 +16,17 @@ namespace DocDb.Core.Extensions
         public static IServiceCollection UseDocumentDbContext<TContext>(this IServiceCollection serviceCollection,
             IDocumentDbOptions options, ServiceLifetime serviceLifetime) where TContext : DocumentDbContext
         {
-            serviceCollection.AddSingleton<IDocumentDbOptions>(options);
-            serviceCollection.Add(new ServiceDescriptor(typeof(TContext), sp => sp.CreateInstance<TContext>(),
-                serviceLifetime));
-
-            return serviceCollection;
+            return UseDocumentDbContext<TContext>(serviceCollection, bld => bld.UseOptions(options),
+                serviceLifetime);
         }
 
         public static IServiceCollection UseDocumentDbContext<TContext>(this IServiceCollection serviceCollection,
             Action<DocumentDbOptionsBuilder> builderFunc, ServiceLifetime serviceLifetime)
             where TContext : DocumentDbContext
         {
-            var builder = new DocumentDbOptionsBuilder();
-            builderFunc(builder);
-
-            if (builder.DocumentDbOptions.IsNotNull())
-            {
-                UseDocumentDbContext<TContext>(serviceCollection, builder.DocumentDbOptions,
-                    serviceLifetime);
-
-                return serviceCollection;
-            }
-
-            throw new ContextConfigutationException(ProviderIsNotConfiguredForThisContext);
+            serviceCollection.Add(new ServiceDescriptor(typeof(TContext), sp => ContextInstanceCreator<TContext>.CreateContextInstance(sp, builderFunc),
+                serviceLifetime));
+            return serviceCollection;
         }
     }
 }

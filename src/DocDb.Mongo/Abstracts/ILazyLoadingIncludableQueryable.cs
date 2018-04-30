@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DocDb.Core.Abstracts;
+﻿using DocDb.Core.Abstracts;
 
 namespace DocDb.Mongo.Abstracts
 {

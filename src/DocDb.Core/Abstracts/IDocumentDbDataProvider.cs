@@ -1,6 +1,4 @@
-﻿using DocDb.Core.Abstracts;
-
-namespace DocDb.Core.Abstracts
+﻿namespace DocDb.Core.Abstracts
 {
     public interface IDocumentDbDataProvider
     {

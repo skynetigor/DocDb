@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using DocDb.Core.DI.Abstract;
 using DocDb.Core.DI.Extensions;
@@ -9,12 +8,12 @@ namespace DocDb.Mongo.Implementation.QueryProviders.LazyLoading.Loaders
 {
     abstract class AbstractDataLoader<TModel, TResult> : IDataLoader<TResult>
     {
-        protected IServiceProvider ServiceProvider { get; }
+        protected IDocDbServiceProvider ServiceProvider { get; }
 
         protected IDataLoader<IEnumerable<TModel>> EnumerableDataLoader =>
             this.ServiceProvider.CreateInstance<EnumerableDataLoader<TModel>>();
 
-        protected AbstractDataLoader(IServiceProvider serviceProvider)
+        protected AbstractDataLoader(IDocDbServiceProvider serviceProvider)
         {
             this.ServiceProvider = serviceProvider;
         }

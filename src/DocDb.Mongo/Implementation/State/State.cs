@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DocDb.Core.DI.Abstract;
 using DocDb.Core.DI.Extensions;
 using DocDb.Mongo.Abstracts;
 using DocDb.Mongo.Implementation.State.Savers;
@@ -13,9 +14,9 @@ namespace DocDb.Mongo.Implementation.State
         private AddedDataChangesSaver<TEntity> AddedDataChangesSaver { get; }
         private UpdatedDataChangesSaver<TEntity> UpdatedDataChangesSaver { get; }
         private RemovedDataChangesSaver<TEntity> RemovedDataChangesSaver { get; }
-        private IServiceProvider ServiceProvider { get; }
+        private IDocDbServiceProvider ServiceProvider { get; }
 
-        public State(IServiceProvider serviceProvider)
+        public State(IDocDbServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
             AddedDataChangesSaver = CreateChangesSaver<AddedDataChangesSaver<TEntity>>();

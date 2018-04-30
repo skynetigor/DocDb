@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DocDb.Core;
 
 namespace DocDb.Mongo.Extensions
 {
@@ -9,7 +7,7 @@ namespace DocDb.Mongo.Extensions
         public static MongoDbOptions UseMongoDb(this DocumentDbOptionsBuilder optionsBuilder, string connectionString, bool dropCollectionEachTime = false)
         {
             MongoDbOptions options = new MongoDbOptions(connectionString, dropCollectionEachTime);
-            optionsBuilder.ChangeDatabaseOptions(options);
+            optionsBuilder.UseOptions(options);
 
             return options;
         }

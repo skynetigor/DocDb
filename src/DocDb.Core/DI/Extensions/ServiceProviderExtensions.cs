@@ -1,46 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using DocDb.Core.Extensions;
 
 namespace DocDb.Core.DI.Extensions
 {
-    public static class ServiceProviderExtensions
+    internal static class ServiceProviderExtensions
     {
-        private const string UnKnownParameterError = "Unable to find suitable constructor for type \"{0}\"";
-
-        public static TService CreateInstance<TService>(this IServiceProvider serviceProvider) where TService: class
+        public static object CreateInstance(this IServiceProvider serviceProvider, ConstructorInfo constructorInfo,
+            Type instanceType,
+            params object[] parameters)
         {
-            return (TService)CreateInstance(serviceProvider, typeof(TService));
-        }
-
-        public static object CreateInstance(this IServiceProvider serviceProvider, Type instanceType)
-        {
-            var constructorInfo = instanceType.GetConstructors();
-
-            for (int i = constructorInfo.Length - 1; i >= 0; i--)
-            {
-                var instance = CreateInstance(serviceProvider, constructorInfo[i], instanceType);
-
-                if (instance != null)
-                {
-                    return instance;
-                }
-            }
-
-            throw new InvalidOperationException(string.Format(UnKnownParameterError, instanceType.Name));
-        }
-
-        private static object CreateInstance(IServiceProvider serviceProvider, ConstructorInfo constructorInfo, Type instanceType)
-        {
-            var valuesList = new List<object>();
             var ctorParameterInfos = constructorInfo.GetParameters();
             var ctorParametersValues = new object[ctorParameterInfos.Length];
 
             for (int i = 0; i < ctorParameterInfos.Length; i++)
             {
                 var ctorParameter = ctorParameterInfos[i];
-                var instance = serviceProvider.GetService(ctorParameter.ParameterType);
+                object instance = null;
+
+                object fromParam = parameters.FirstOrDefault(p => ctorParameter.ParameterType.IsInstanceOfType(p));
+
+                instance = fromParam.IsNotNull() ? fromParam : serviceProvider.GetService(ctorParameter.ParameterType);
 
                 if (instance == null)
                 {

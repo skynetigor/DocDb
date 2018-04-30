@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using DocDb.Mongo.Models;
 
 namespace DocDb.Mongo.Helpers

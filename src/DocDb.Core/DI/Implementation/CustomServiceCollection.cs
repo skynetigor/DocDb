@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DocDb.Core.DI.Implementation
 {
-    public class CustomServiceCollection: ServiceCollection, ICustomServiceCollection
+    internal class DocDbServiceCollection: ServiceCollection, IDocDbServiceCollection
     {
-        public IServiceProvider BuildServiceProvider()
+        public IDocDbServiceProvider BuildDocDbServiceProvider()
         {
-            return new CustomServiceProvider(this);
+            return new DocDbServiceProvider(this);
         }
     }
 }

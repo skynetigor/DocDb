@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocDb.Core.Abstracts;
-using DocDb.Core.DI.Abstract;
-using DocDb.Core.DI.Implementation;
 using DocDb.Mongo.Abstracts;
 using DocDb.Mongo.Implementation;
 using DocDb.Mongo.Implementation.QueryProviders.EagerLoading;
@@ -17,12 +14,11 @@ using MongoDB.Driver;
 
 namespace DocDb.Mongo
 {
-    class MongoDbProvider: IDocumentDbDataProvider, IDbsetContainer
+    internal class MongoDbProvider : AbstractDocumentDbDataProvider, IDbsetContainer
     {
         private readonly IList<object> _dbSets = new List<object>();
 
         private IMongoDatabase Database { get; }
-        private IServiceProvider ServiceProvider { get; }
         private ITypeInitializer TypeInititalizer { get; }
         private IStateManager StateManager { get; }
         private MongoDbOptions MongoDbOptions { get; }
@@ -39,15 +35,14 @@ namespace DocDb.Mongo
             var connection = new MongoUrlBuilder(options.ConnectionString);
             var client = new MongoClient(options.ConnectionString);
             this.Database = client.GetDatabase(connection.DatabaseName);
-            ICustomServiceCollection serviceCollection = new CustomServiceCollection();
-            serviceCollection.AddSingleton(options);
-            this.ConfigureServices(serviceCollection);
-            this.ServiceProvider = serviceCollection.BuildServiceProvider();
+
+            InitializeProvider();
+
             TypeInititalizer = ServiceProvider.GetService<ITypeInitializer>();
             StateManager = ServiceProvider.GetService<IStateManager>();
         }
 
-        public void RegisterModel<T>() where T: class
+        public override void RegisterModel<T>()
         {
             TypeInititalizer.RegisterType<T>();
 
@@ -60,19 +55,19 @@ namespace DocDb.Mongo
             this._dbSets.Add(dbSet);
         }
 
-        public void SaveChanges()
+        public override void SaveChanges()
         {
             StateManager.SaveChanges();
         }
 
-        public IDbSet<T> GetDbSet<T>() where T : class
+        public override IDbSet<T> GetDbSet<T>()
         {
-            return (IDbSet<T>) _dbSets.FirstOrDefault(db => db is IDbSet<T>);
+            return (IDbSet<T>)_dbSets.FirstOrDefault(db => db is IDbSet<T>);
         }
 
-        protected void ConfigureServices(IServiceCollection serviceCollection)
+        protected override void ConfigureServices(IServiceCollection serviceCollection)
         {
-            serviceCollection
+            serviceCollection.AddSingleton(MongoDbOptions)
                 .AddSingleton<ITypeInitializer, TypeInitializerImpl>()
                 .AddSingleton<IMongoDatabase>(this.Database)
                 .AddSingleton<IDbsetContainer>(this)
